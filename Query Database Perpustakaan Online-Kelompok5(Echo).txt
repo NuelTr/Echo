@@ -1,0 +1,81 @@
+CREATE DATABASE IF NOT EXISTS perpustakaan_online;
+USE perpustakaan_online;
+
+CREATE TABLE users (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,
+    nama VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    role ENUM('admin','anggota'),
+    alamat TEXT,
+    no_hp VARCHAR(20)
+);
+
+CREATE TABLE buku (
+    id_buku INT AUTO_INCREMENT PRIMARY KEY,
+    judul VARCHAR(200),
+    tahun_terbit YEAR,
+    isbn VARCHAR(50),
+    stok INT
+);
+
+CREATE TABLE peminjaman (
+    id_peminjaman INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT,
+    tanggal_pinjam DATE,
+    tanggal_jatuh_tempo DATE,
+    status ENUM('dipinjam','kembali','terlambat'),
+
+    FOREIGN KEY (id_user) REFERENCES users(id_user)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE detail_peminjaman (
+    id_detail INT AUTO_INCREMENT PRIMARY KEY,
+    id_peminjaman INT,
+    id_buku INT,
+    jumlah INT,
+
+    FOREIGN KEY (id_peminjaman) REFERENCES peminjaman(id_peminjaman)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_buku) REFERENCES buku(id_buku)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE pengembalian (
+    id_pengembalian INT AUTO_INCREMENT PRIMARY KEY,
+    id_peminjaman INT,
+    tanggal_dikembalikan DATE,
+
+    FOREIGN KEY (id_peminjaman) REFERENCES peminjaman(id_peminjaman)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE denda (
+    id_denda INT AUTO_INCREMENT PRIMARY KEY,
+    id_peminjaman INT,
+    jumlah_denda DECIMAL(10,2),
+    status_bayar ENUM('belum_bayar','sudah_bayar'),
+
+    FOREIGN KEY (id_peminjaman) REFERENCES peminjaman(id_peminjaman)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE review (
+    id_review INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT,
+    id_buku INT,
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    komentar TEXT,
+
+    FOREIGN KEY (id_user) REFERENCES users(id_user)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_buku) REFERENCES buku(id_buku)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+
+
+
